@@ -139,7 +139,8 @@ qtModule {
 
   propagatedBuildInputs = [
     # Image formats
-    libjpeg libpng libtiff libwebp
+    libjpeg libtiff libwebp
+    (libpng.override { apngSupport = false; }) # https://github.com/qutebrowser/qutebrowser/issues/5473
 
     # Video formats
     srtp libvpx
