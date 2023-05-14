@@ -5,20 +5,15 @@ with lib;
 let
   cfg = config.services.youtrack;
 
-  extraAttr = concatStringsSep " " (mapAttrsToList (k: v: "-D${k}=${v}") (stdParams // cfg.extraParams));
-  mergeAttrList = lib.foldl' lib.mergeAttrs {};
-
-  stdParams = mergeAttrList [
-    (optionalAttrs (cfg.baseUrl != null) {
-      "jetbrains.youtrack.baseUrl" = cfg.baseUrl;
-    })
-    {
-    "java.aws.headless" = "true";
-    "jetbrains.youtrack.disableBrowser" = "true";
-    }
-  ];
+  package = cfg.package.override {
+    statePath = cfg.statePath;
+  };
 in
 {
+  imports = [
+    (mkRenamedOptionModule [ "services" "youtrack" "baseUrl" ] [ "services" "youtrack" "settings" "base-url" ])
+  ];
+
   options.services.youtrack = {
 
     enable = mkEnableOption (lib.mdDoc "YouTrack service");
@@ -29,29 +24,6 @@ in
       '';
       default = "127.0.0.1";
       type = types.str;
-    };
-
-    baseUrl = mkOption {
-      description = lib.mdDoc ''
-        Base URL for youtrack. Will be auto-detected and stored in database.
-      '';
-      type = types.nullOr types.str;
-      default = null;
-    };
-
-    extraParams = mkOption {
-      default = {};
-      description = lib.mdDoc ''
-        Extra parameters to pass to youtrack. See
-        https://www.jetbrains.com/help/youtrack/standalone/YouTrack-Java-Start-Parameters.html
-        for more information.
-      '';
-      example = literalExpression ''
-        {
-          "jetbrains.youtrack.overrideRootPassword" = "tortuga";
-        }
-      '';
-      type = types.attrsOf types.str;
     };
 
     package = mkOption {
@@ -95,7 +67,7 @@ in
         for more information.
       '';
       type = types.separatedString " ";
-      example = "-XX:MetaspaceSize=250m";
+      example = "--J-XX:MetaspaceSize=250m";
       default = "";
     };
 
@@ -114,22 +86,50 @@ in
       type = types.str;
       default = "350m";
     };
+
+    settings = mkOption {
+      type = with types; attrsOf (oneOf [ bool int str ]);
+      description = lib.mdDoc ''
+        Settings directly set in a YouTrack configuration file.
+        See https://www.jetbrains.com/help/youtrack/server/2023.1/YouTrack-Java-Start-Parameters.html
+        for more information.
+      '';
+      example = {
+        tls-redirect-from-http = true;
+      };
+      default = {};
+    };
   };
 
   config = mkIf cfg.enable {
+    services.youtrack.settings = {
+      listen-address = cfg.address;
+      listen-port = toString cfg.port;
+    };
 
     systemd.services.youtrack = {
-      environment.HOME = cfg.statePath;
-      environment.YOUTRACK_JVM_OPTS = "${extraAttr}";
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
       path = with pkgs; [ unixtools.hostname ];
+      preStart = ''
+        mkdir -p ${cfg.statePath}/{backups,conf,data,logs,temp}
+        if [[ ! -f ${cfg.statePath}/.migrated_2023_1 && -d ${cfg.statePath}/teamsysdata ]]
+        then
+          mv ${cfg.statePath}/.youtrack/backups ${cfg.statePath}
+          mv ${cfg.statePath}/.youtrack/logs ${cfg.statePath}
+          cp -r ${cfg.statePath}/teamsysdata/conf ${cfg.statePath}
+          touch ${cfg.statePath}/.migrated_2023_1
+        fi
+        ${package}/bin/youtrack configure --listen-port=${toString cfg.port}
+      '' + (concatStrings (mapAttrsToList (name: value: ''
+        ${package}/bin/youtrack configure --${name}=${toString value}
+      '') cfg.settings ));
       serviceConfig = {
         Type = "simple";
         User = "youtrack";
         Group = "youtrack";
         Restart = "on-failure";
-        ExecStart = ''${cfg.package}/bin/youtrack --J-Xmx${cfg.maxMemory} --J-XX:MaxMetaspaceSize=${cfg.maxMetaspaceSize} ${cfg.jvmOpts} ${cfg.address}:${toString cfg.port}'';
+        ExecStart = ''${package}/bin/youtrack run --J-Xmx${cfg.maxMemory} --J-XX:MaxMetaspaceSize=${cfg.maxMetaspaceSize} ${cfg.jvmOpts}'';
       };
     };
 
