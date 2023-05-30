@@ -17,52 +17,19 @@
 }:
 
 let
-  version = "1.14.4";
+  version = "1.14.5";
 
   src = fetchFromGitHub {
     owner = "paperless-ngx";
     repo = "paperless-ngx";
     rev = "refs/tags/v${version}";
-    hash = "sha256-9+8XqENpSdsND6g59oJkVoCe5tJ1Pwo8HD7Cszv/t7o=";
+    hash = "sha256-WEqq8LyKpCoTtSooJREMg3vwQ7BK1TZmjopcVCXCiJs=";
   };
 
   # Use specific package versions required by paperless-ngx
   python = python3.override {
     packageOverrides = self: super: {
       django = super.django_4;
-
-      aioredis = super.aioredis.overridePythonAttrs (oldAttrs: rec {
-        version = "1.3.1";
-        src = oldAttrs.src.override {
-          inherit version;
-          sha256 = "0fi7jd5hlx8cnv1m97kv9hc4ih4l8v15wzkqwsp73is4n0qazy0m";
-        };
-      });
-
-      channels = super.channels.overridePythonAttrs (oldAttrs: rec {
-        version = "3.0.5";
-        pname = "channels";
-        src = fetchFromGitHub {
-          owner = "django";
-          repo = pname;
-          rev = version;
-          sha256 = "sha256-bKrPLbD9zG7DwIYBst1cb+zkDsM8B02wh3D80iortpw=";
-        };
-        propagatedBuildInputs = oldAttrs.propagatedBuildInputs ++ [ self.daphne ];
-        pytestFlagsArray = [ "--asyncio-mode=auto" ];
-      });
-
-      daphne = super.daphne.overridePythonAttrs (oldAttrs: rec {
-        version = "3.0.2";
-        pname = "daphne";
-        src = fetchFromGitHub {
-          owner = "django";
-          repo = pname;
-          rev = version;
-          hash = "sha256-KWkMV4L7bA2Eo/u4GGif6lmDNrZAzvYyDiyzyWt9LeI=";
-        };
-      });
-
     };
   };
 
@@ -118,7 +85,6 @@ python.pkgs.buildPythonApplication rec {
   ];
 
   propagatedBuildInputs = with python.pkgs; [
-    aioredis
     amqp
     anyio
     asgiref
@@ -142,7 +108,6 @@ python.pkgs.buildPythonApplication rec {
     concurrent-log-handler
     constantly
     cryptography
-    daphne
     dateparser
     django-celery-results
     django-cors-headers
@@ -150,7 +115,6 @@ python.pkgs.buildPythonApplication rec {
     django-extensions
     django-filter
     django-guardian
-    django-ipware
     django
     djangorestframework-guardian2
     djangorestframework
@@ -179,7 +143,6 @@ python.pkgs.buildPythonApplication rec {
     packaging
     pathvalidate
     pdf2image
-    pdfminer-six
     pikepdf
     pillow
     pluggy
@@ -192,6 +155,7 @@ python.pkgs.buildPythonApplication rec {
     pyopenssl
     python-dateutil
     python-dotenv
+    python-ipware
     python-gnupg
     python-magic
     pytz
@@ -266,12 +230,15 @@ python.pkgs.buildPythonApplication rec {
   '';
 
   nativeCheckInputs = with python.pkgs; [
+    daphne
     factory_boy
     imagehash
+    pdfminer-six
     pytest-django
     pytest-env
     pytest-xdist
     pytestCheckHook
+    reportlab
   ];
 
   pytestFlagsArray = [
