@@ -2,11 +2,11 @@
 
 stdenv.mkDerivation rec {
   pname = "youtrack";
-  version = "2023.1.9570";
+  version = "2023.1.10106";
 
   src = fetchzip {
     url = "https://download.jetbrains.com/charisma/youtrack-${version}.zip";
-    sha256 = "sha256-vDwkwk15PBe1JQ3nOMZY/at5nxRYjzFbMl3JGULmdpE=";
+    sha256 = "sha256-ZH8vky7ixyzuRiMQ/KzVx4dBz/UPz03w5OBTw21OiM8=";
   };
 
   nativeBuildInputs = [ makeWrapper p7zip ];
