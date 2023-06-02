@@ -4,7 +4,7 @@ with lib;
 
 let
   cfg = config.services.snipe-it;
-  snipe-it = pkgs.snipe-it.override {
+  snipe-it = cfg.package.override {
     dataDir = cfg.dataDir;
   };
   db = cfg.database;
@@ -29,6 +29,13 @@ in {
   options.services.snipe-it = {
 
     enable = mkEnableOption (lib.mdDoc "A free open source IT asset/license management system");
+
+    package = mkOption {
+      type = types.package;
+      default = pkgs.snipe-it;
+      defaultText = literalExpression "pkgs.snipe-it";
+      description = lib.mdDoc "Which snipe-it package to use.";
+    };
 
     user = mkOption {
       default = "snipeit";
