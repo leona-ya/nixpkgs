@@ -479,6 +479,7 @@ mapAliases ({
   euca2tools = throw "euca2ools has been removed because it is unmaintained upstream and still uses python2"; # Added 2022-01-01
   evilvte = throw "evilvte has been removed from nixpkgs for being unmaintained with security issues and dependant on an old version of vte which was removed"; # Added 2022-01-14
   evolution_data_server = throw "'evolution_data_server' has been renamed to/replaced by 'evolution-data-server'"; # Converted to throw 2022-02-22
+  exhibitor = throw "'exhibitor' has been removed because it is unmaintained upstream"; # Added 2023-06-20
   exfat-utils = throw "'exfat-utils' has been renamed to/replaced by 'exfat'"; # Converted to throw 2022-02-22
 
   ### F ###
@@ -1262,6 +1263,10 @@ mapAliases ({
   phwmon = throw "phwmon has been removed: abandoned by upstream"; # Added 2022-04-24
 
   # Obsolete PHP version aliases
+  php80 = throw "php80 has been dropped due to the lack of maintenance from upstream for future releases"; # Added 2023-06-21
+  php80Packages = php80; # Added 2023-06-21
+  php80Extensions = php80; # Added 2023-06-21
+
   php74 = throw "php74 has been dropped due to the lack of maintenance from upstream for future releases"; # Added 2022-05-24
   php74Packages = php74; # Added 2022-05-24
   php74Extensions = php74; # Added 2022-05-24
@@ -1734,6 +1739,7 @@ mapAliases ({
 
   v4l_utils = v4l-utils; # Added 2019-08-07
   vamp = { vampSDK = vamp-plugin-sdk; }; # Added 2020-03-26
+  vaapiIntel = intel-vaapi-driver; # Added 2023-05-31
   vapor = throw "vapor was removed because it was unmaintained and upstream service no longer exists";
   varnish62 = throw "varnish62 was removed from nixpkgs, because it is unmaintained upstream. Please switch to a different release"; # Added 2021-07-26
   varnish63 = throw "varnish63 was removed from nixpkgs, because it is unmaintained upstream. Please switch to a different release"; # Added 2021-07-26
