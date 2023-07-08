@@ -19230,6 +19230,8 @@ with pkgs;
 
   reshape = callPackage ../development/tools/reshape { } ;
 
+  requestly = callPackage ../tools/networking/requestly { };
+
   retdec = callPackage ../development/tools/analysis/retdec {
     stdenv = gcc8Stdenv;
   };
