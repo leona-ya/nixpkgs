@@ -7,6 +7,48 @@ let
     # https://www.jetbrains.com/youtrack/buy/license.html
     license = licenses.unfree;
   };
+
+  generic = {
+    version, hash,
+  }: stdenv.mkDerivation rec {
+    pname = "youtrack";
+    inherit version;
+
+    # This base version is seperated by _ instaed of . to ensure path compatability and confusion
+    baseVersion = with lib; pipe version [
+      versions.splitVersion
+      (take 2)
+      (concatStringsSep "_")
+    ];
+
+    src = fetchzip {
+      url = "https://download.jetbrains.com/charisma/youtrack-${version}.zip";
+      inherit hash;
+    };
+
+    nativeBuildInputs = [ makeWrapper p7zip ];
+
+    installPhase = ''
+      runHook preInstall
+
+      mkdir -p $out/app
+      cp -a . $out/app
+
+      for path in "backups" "conf" "data" "logs" "temp"
+      do
+        rm -rf $out/app/$path
+        ln -s ${baseStatePath}/${baseVersion}/$path $out/app/$path
+      done
+
+      makeWrapper "$out/app/bin/youtrack.sh" "$out/bin/youtrack" \
+        --prefix PATH : "$out/libexec/app:${lib.makeBinPath [ jdk17 gawk ]}" \
+        --set FJ_JAVA_EXEC "${jdk17}/bin/java" \
+        --set JRE_HOME ${jdk17}
+
+      runHook postInstall
+    '';
+    inherit meta;
+  };
 in {
   # We use the old YouTrack packaing still for 2022.3, because changing would
   # change the data structure.
@@ -34,5 +76,10 @@ in {
     '';
 
     inherit meta;
+  };
+
+  youtrack_2023_1 = generic {
+    version = "2023.1.17582";
+    hash = "sha256-rROoeUGZPNwQp7NvoMrk+MCK1bE/fwdBnc6VJpdlNZk=";
   };
 }
