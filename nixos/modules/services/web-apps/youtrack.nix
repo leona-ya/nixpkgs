@@ -217,5 +217,6 @@ in
     };
   };
 
+  meta.doc = ./youtrack.md;
   meta.maintainers = [ lib.maintainers.leona ];
 }
