@@ -15,6 +15,7 @@ let
     concatStringsSep
     mapAttrsToList
     escapeShellArg
+    escapeShellArgs
     mkIf
     optionalString
     optionals
@@ -269,6 +270,14 @@ in
           different theme types: for example, `account`,
           `login` etc. After adding a theme to this option you
           can select it by its name in Keycloak administration console.
+        '';
+      };
+      
+      extraStartupParameters = mkOption {
+        type = lib.types.listOf str;
+        default = [];
+        description = lib.mdDoc ''
+          List of additional arguments to pass to Keycloak during startup.
         '';
       };
 
@@ -663,7 +672,7 @@ in
             '' + ''
               export KEYCLOAK_ADMIN=admin
               export KEYCLOAK_ADMIN_PASSWORD=${escapeShellArg cfg.initialAdminPassword}
-              kc.sh start --optimized
+              kc.sh start --optimized ${escapeShellArgs cfg.extraStartupParameters}
             '';
           };
 
