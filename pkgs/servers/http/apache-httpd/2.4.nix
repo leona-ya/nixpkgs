@@ -13,11 +13,11 @@
 
 stdenv.mkDerivation rec {
   pname = "apache-httpd";
-  version = "2.4.58";
+  version = "2.4.59";
 
   src = fetchurl {
     url = "mirror://apache/httpd/httpd-${version}.tar.bz2";
-    sha256 = "sha256-+hbXKgeCEKVMR91b7y+Lm4oB2UkJpRRTlWs+xkQupMU=";
+    hash = "sha256-7FFQHsSAKE/1L2NyWBNdMzIwp9Ipw6+m9sL5BA4yEyM=";
   };
 
   # FIXME: -dev depends on -doc
@@ -41,12 +41,6 @@ stdenv.mkDerivation rec {
       name = "compat-with-rustls-ffi-0.10.0.patch";
       url = "https://github.com/apache/httpd/commit/918620a183d843fb393ed939423a25d42c1044ec.patch";
       hash = "sha256-YZi3t++hjM0skisax2xuh9DifZVZjCjVn6XQr6QKGEs=";
-    })
-  ] ++ lib.optionals libxml2Support [
-    (fetchpatch {
-      name = "compat-with-libxml2-2.12.patch";
-      url = "https://github.com/apache/httpd/commit/27a68e54b7c6d2ae80dca396fd2727852897dab1.patch";
-      hash = "sha256-k2EqCaDkckrXLsHnjP4h+b1brTnde4pUyrbOiPFB6qk=";
     })
   ];
 
