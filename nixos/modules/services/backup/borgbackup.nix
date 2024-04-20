@@ -242,7 +242,7 @@ in {
     default = { };
     example = literalExpression ''
       { # for a local backup
-        rootBackup = {
+        localBackup = {
           paths = "/";
           exclude = [ "/nix" ];
           repo = "/path/to/local/repo";
@@ -253,24 +253,24 @@ in {
           compression = "auto,lzma";
           startAt = "weekly";
         };
-      }
-      { # Root backing each day up to a remote backup server. We assume that you have
-        #   * created a password less key: ssh-keygen -N "" -t ed25519 -f /path/to/ssh_key
-        #     best practices are: use -t ed25519, /path/to = /run/keys
-        #   * the passphrase is in the file /run/keys/borgbackup_passphrase
-        #   * you have initialized the repository manually
-        paths = [ "/etc" "/home" ];
-        exclude = [ "/nix" "'**/.cache'" ];
-        doInit = false;
-        repo =  "user3@arep.repo.borgbase.com:repo";
-        encryption = {
-          mode = "repokey-blake2";
-          passCommand = "cat /path/to/passphrase";
+        remoteBackup = { # Root backing each day up to a remote backup server. We assume that you have
+          #   * created a password less key: ssh-keygen -N "" -t ed25519 -f /path/to/ssh_key
+          #     best practices are: use -t ed25519, /path/to = /run/keys
+          #   * the passphrase is in the file /run/keys/borgbackup_passphrase
+          #   * you have initialized the repository manually
+          paths = [ "/etc" "/home" ];
+          exclude = [ "/nix" "'**/.cache'" ];
+          doInit = false;
+          repo =  "user3@arep.repo.borgbase.com:repo";
+          encryption = {
+            mode = "repokey-blake2";
+            passCommand = "cat /path/to/passphrase";
+          };
+          environment = { BORG_RSH = "ssh -i /path/to/ssh_key"; };
+          compression = "auto,lzma";
+          startAt = "daily";
         };
-        environment = { BORG_RSH = "ssh -i /path/to/ssh_key"; };
-        compression = "auto,lzma";
-        startAt = "daily";
-    };
+      };
     '';
     type = types.attrsOf (types.submodule (let globalConfig = config; in
       { name, config, ... }: {
