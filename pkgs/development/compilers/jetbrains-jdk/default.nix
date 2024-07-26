@@ -38,8 +38,8 @@ let
 in
 jdk.overrideAttrs (oldAttrs: rec {
   pname = "jetbrains-jdk" + lib.optionalString withJcef "-jcef";
-  javaVersion = "21.0.3";
-  build = "465.3";
+  javaVersion = "21.0.4";
+  build = "547.2";
   # To get the new tag:
   # git clone https://github.com/jetbrains/jetbrainsruntime
   # cd jetbrainsruntime
@@ -52,12 +52,12 @@ jdk.overrideAttrs (oldAttrs: rec {
     owner = "JetBrains";
     repo = "JetBrainsRuntime";
     rev = "jb${version}";
-    hash = "sha256-Pup/XeHExCE6yy2o74wF7VlYU6MI9cg8gb69V3bclIo=";
+    hash = "sha256-CD1clgkgQrI3Xri8d9lhfQhVVTzVGlu/StWkzRxo2CA=";
   };
 
   BOOT_JDK = jdk.home;
   # run `git log -1 --pretty=%ct` in jdk repo for new value on update
-  SOURCE_DATE_EPOCH = 1717225235;
+  SOURCE_DATE_EPOCH = 1721819967;
 
   patches = [ ];
 
