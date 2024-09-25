@@ -1477,19 +1477,6 @@ let
       beamDeps = [ ecto prometheus_ex ];
     };
 
-    prometheus_phoenix = buildMix rec {
-      name = "prometheus_phoenix";
-      version = "1.3.0";
-
-      src = fetchHex {
-        pkg = "prometheus_phoenix";
-        version = "${version}";
-        sha256 = "c4d1404ac4e9d3d963da601db2a7d8ea31194f0017057fabf0cfb9bf5a6c8c75";
-      };
-
-      beamDeps = [ phoenix prometheus_ex ];
-    };
-
     prometheus_plugs = buildMix rec {
       name = "prometheus_plugs";
       version = "1.1.5";

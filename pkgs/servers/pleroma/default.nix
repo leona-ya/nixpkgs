@@ -34,6 +34,19 @@ beamPackages.mixRelease rec {
     overrides = final: prev: {
       # mix2nix does not support git dependencies yet,
       # so we need to add them manually
+      captcha = beamPackages.buildMix {
+        name = "captcha";
+        version = "0.1.0";
+
+        src = fetchFromGitLab {
+          domain = "git.pleroma.social";
+          owner = "pleroma/elixir-libraries";
+          repo = "elixir-captcha";
+          rev = "90f6ce7672f70f56708792a98d98bd05176c9176";
+          sha256 = "sha256-s7EuAhmCsQA/4p2NJHJSWB/DZ5hA+7EelPsUOvKr2Po=";
+        };
+        beamDeps = with final; [ ];
+      };
       prometheus_ex = beamPackages.buildMix {
         name = "prometheus_ex";
         version = "3.0.5";
@@ -42,17 +55,22 @@ beamPackages.mixRelease rec {
           owner = "lanodan";
           repo = "prometheus.ex";
           rev = "31f7fbe4b71b79ba27efc2a5085746c4011ceb8f";
-          sha256 = "sha256-2PZP+YnwnHt69HtIAQvjMBqBbfdbkRSoMzb1AL2Zsyc=";
+          hash = "sha256-2PZP+YnwnHt69HtIAQvjMBqBbfdbkRSoMzb1AL2Zsyc=";
         };
         beamDeps = with final; [ prometheus ];
       };
-      prometheus_phoenix = prev.prometheus_phoenix.override {
-        # Not sure how to fix that Phoenix.Controller missing import.
-        # It should be there…
-        patchPhase = ''
-          substituteInPlace mix.exs --replace '{:phoenix, "~> 1.4"}' '{:phoenix, "~> 1.7"}'
-        '';
-        enableDebugInfo = true;
+      remote_ip = beamPackages.buildMix {
+        name = "remote_ip";
+        version = "0.1.5";
+
+        src = fetchFromGitLab {
+          domain = "git.pleroma.social";
+          owner = "pleroma/elixir-libraries";
+          repo = "remote_ip";
+          rev = "b647d0deecaa3acb140854fe4bda5b7e1dc6d1c8";
+          hash = "sha256-pgON0uhTPVeeAC866Qz24Jvm1okoAECAHJrRzqaq+zA=";
+        };
+        beamDeps = with final; [ combine plug inet_cidr ];
       };
       majic = prev.majic.override { buildInputs = [ file ]; };
       # Some additional build inputs and build fixes
