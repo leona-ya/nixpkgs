@@ -47,6 +47,13 @@ lib.makeScope newScope (
       ipu6-camera-hal = ipu6epmtl-camera-hal;
     };
 
+    icamerasrc-ipu7x = callPackage ./icamerasrc {
+      ipuVariant = "ipu7";
+    };
+    icamerasrc-ipu75xa = callPackage ./icamerasrc {
+      ipuVariant = "ipu7";
+    };
+
     # note: gst-python is in ../../python-modules/gst-python - called under python3Packages
   }
   // lib.optionalAttrs config.allowAliases {
