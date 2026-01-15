@@ -39,6 +39,10 @@ stdenv.mkDerivation {
     hash = "sha256-6kg421WkY4ucPRevyV+2K1NU/mjkbN15NYQPWsbQ5ic=";
   };
 
+  patches = [
+    ./0001-Fix-missing-definition-of-uint32_t.patch
+  ];
+
   nativeBuildInputs = [
     cmake
     pkg-config
