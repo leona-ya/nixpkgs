@@ -236,6 +236,7 @@ in
             PIDFile = "/run/vinylncsa/vinylncsa.pid";
             User = "vinyl-cache";
             Group = "vinyl-cache";
+            DynamicUser = true;
             ExecStart = "${cfg.package}/bin/vinylncsa -D -a -w /var/log/vinyl-cache/vinyl-cache.log -P /run/vinylncsa/vinylncsa.pid";
             ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
           };
